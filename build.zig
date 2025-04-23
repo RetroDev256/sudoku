@@ -32,6 +32,8 @@ pub fn build(b: *std.Build) !void {
         const risky = b.option(bool, "risky", "Create binary with PHDR which is RWX") orelse false;
         exe.setLinkerScript(b.path(if (risky) "linker_risky.ld" else "linker_safe.ld"));
         // toggle compiler options
+        exe.bundle_compiler_rt = false;
+        exe.no_builtin = true;
         exe.link_data_sections = true;
         exe.link_function_sections = true;
         exe.root_module.strip = true;
@@ -42,9 +44,7 @@ pub fn build(b: *std.Build) !void {
     // run
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    if (b.args) |args| run_cmd.addArgs(args); 
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
     // tests
