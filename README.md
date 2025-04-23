@@ -4,9 +4,12 @@ The current size of the linux binary is 570 bytes.
 
 # Usage:
 `sudoku GRID` - where `GRID` is a string of 81 consecutive digits, 0 representing empty cells.
+eg. `/sudoku 530070000600195000098000060800060003400803001700020006060000280000419005000080079`
 
 Compile with `zig build -Drelease -Drisky shrink`
 (Will require sstrip from elfkickers)
+
+The program will not output anything if the input grid cannot be solved. It is undefined behavior if you don't give it a valid input grid.
 
 # Hexdump:
 ```
