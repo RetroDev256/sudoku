@@ -1,6 +1,6 @@
 # What?
 It's a command-line sudoku solver that is made to be ultra tiny. Of course, the page size of many file systems makes a size below 4k no different than any other, but it's still fun to work with :)
-The current size of the linux binary is 570 bytes.
+The current size of the linux binary is 507 bytes.
 
 # Usage:
 `sudoku GRID` - where `GRID` is a string of 81 consecutive digits, 0 representing empty cells.
