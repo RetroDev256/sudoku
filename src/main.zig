@@ -48,11 +48,12 @@ fn solve(state: *[81]u8) bool {
         } else {
             backtrack: while (true) {
                 // search for the last cell which we can change
-                while (grid[current] != 0) {
+                if (grid[current] == 0) {
                     if (current == 0) {
                         return false; // no solution
                     } else {
                         current -= 1;
+                        continue :backtrack;
                     }
                 }
 
