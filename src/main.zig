@@ -20,7 +20,7 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     }
 
     if (solve(argv[1][0..81])) {
-        render(argv[1][0..81].*);
+        render(argv[1][0..81]);
     }
 
     std.process.exit(0);
@@ -68,7 +68,7 @@ fn solve(state: *[81]u8) bool {
                 }
 
                 // reduce the cell
-                assert(state[current] > 0);
+                assert(state[current] != 0);
                 state[current] -= 1;
 
                 // stop backtracking when we are in a stable state
@@ -86,7 +86,7 @@ fn solve(state: *[81]u8) bool {
     }
 }
 
-fn render(grid: [81]u8) void {
+fn render(grid: *const [81]u8) void {
     for (0..9) |row| {
         for (0..9) |col| {
             const val = grid[col + row * 9];
