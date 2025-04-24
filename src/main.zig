@@ -36,25 +36,14 @@ fn solve(state: *[81]u8) bool {
 
     while (true) {
         if (check(state)) {
-            // move forward to the next non-zero cell
-            if (state[current] != 0) {
+            // Update the cell - skip ones we can't alter
+            while (state[current] != 0) {
                 if (current == 80) {
                     return true; // found solution
                 } else {
                     current += 1;
-                    // skip cells we can't change
-                    while (grid[current] != 0) {
-                        if (current == 80) {
-                            return true; // found solution
-                        } else {
-                            current += 1;
-                        }
-                    }
                 }
             }
-
-            // update the cell
-            assert(state[current] == 0);
             state[current] = 9;
         } else {
             backtrack: while (true) {
@@ -72,14 +61,14 @@ fn solve(state: *[81]u8) bool {
                 state[current] -= 1;
 
                 // stop backtracking when we are in a stable state
-                if (state[current] != 0) {
-                    break :backtrack;
-                } else {
+                if (state[current] == 0) {
                     if (current == 0) {
                         return false; // no solution
                     } else {
                         current -= 1;
                     }
+                } else {
+                    break :backtrack;
                 }
             }
         }
