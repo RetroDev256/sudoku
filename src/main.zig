@@ -1,9 +1,6 @@
 pub export fn _start() callconv(.naked) noreturn {
     asm volatile (
-        \\ xorl %%ebp, %%ebp
         \\ movl %%esp, %%eax
-        \\ andl $-16, %%esp
-        \\ subl $12, %%esp
         \\ pushl %%eax
         \\ calll %[posixMainAndExit:P]
         :
@@ -23,7 +20,7 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     }
 
     if (solve(argv[1][0..81])) {
-        try render(argv[1][0..81].*);
+        render(argv[1][0..81].*);
     }
 
     std.process.exit(0);
@@ -89,20 +86,21 @@ fn solve(state: *[81]u8) bool {
     }
 }
 
-fn render(grid: [81]u8) !void {
+fn render(grid: [81]u8) void {
     for (0..9) |row| {
         for (0..9) |col| {
             const val = grid[col + row * 9];
             assert(val > 0 and val < 10);
-            putstr(&.{'0' + val});
+            putByte('0' + val);
         }
-        putstr("\n");
+        putByte('\n');
     }
 }
 
-// Print a string at cursor - can fail, but likely won't
-fn putstr(str: []const u8) void {
-    assert(std.os.linux.write(1, str.ptr, str.len) == str.len);
+// Print a byte
+fn putByte(byte: u8) void {
+    const str: *const [1]u8 = &byte;
+    assert(std.os.linux.write(1, str, 1) == 1);
 }
 
 // return true on success - ignore cells == 0
