@@ -6,9 +6,7 @@ PHDRS {
 }
 
 SECTIONS {
-	. += SIZEOF_HEADERS;
-
-	.text : SUBALIGN(0) {
+	.text SIZEOF_HEADERS : {
 		*(.text*)
 		*(.rodata*)
 		*(.data*)
