@@ -6,7 +6,9 @@ PHDRS {
 }
 
 SECTIONS {
-	.text SIZEOF_HEADERS : {
+	. += SIZEOF_HEADERS;
+
+	.text : {
 		*(.text*)
 		*(.rodata*)
 		*(.data*)
