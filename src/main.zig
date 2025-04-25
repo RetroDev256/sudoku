@@ -1,3 +1,6 @@
+const std = @import("std");
+const assert = std.debug.assert;
+
 pub export fn _start() callconv(.naked) noreturn {
     asm volatile (
         \\ movl %%esp, %%eax
@@ -25,9 +28,6 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
 
     std.process.exit(0);
 }
-
-const std = @import("std");
-const assert = std.debug.assert;
 
 // Backtracking sudoku solver
 fn solve(state: *[81]u8) bool {
@@ -79,9 +79,9 @@ fn solve(state: *[81]u8) bool {
 fn render(grid: *const [81]u8) void {
     for (0..9) |row| {
         for (0..9) |col| {
-            const val = grid[col + row * 9];
-            assert(val > 0 and val < 10);
-            putByte('0' + val);
+            const cell = grid[col + row * 9];
+            assert(cell > 0 and cell < 10);
+            putByte('0' + cell);
         }
         putByte('\n');
     }
