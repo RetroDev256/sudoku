@@ -96,7 +96,7 @@ fn putByte(byte: u8) void {
 
 // return true on success - ignore cells == 0
 fn check(grid: *const [81]u8) bool {
-    return lines(grid) and blocks(grid);
+    return blocks(grid) and lines(grid);
 }
 
 // return true on success - ignore cells == 0
