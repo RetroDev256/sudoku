@@ -19,12 +19,13 @@ pub fn build(b: *std.Build) !void {
         .preferred_optimize_mode = .ReleaseSmall,
     });
 
-    // build
     const exe_mod = b.addModule("sudoku", .{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
+
+    // build an exe
     const exe = b.addExecutable(.{
         .name = "sudoku",
         .root_module = exe_mod,
@@ -36,11 +37,12 @@ pub fn build(b: *std.Build) !void {
         // custom linker script
         const risky = b.option(bool, "risky", "Create binary with PHDR which is RWX") orelse false;
         exe.setLinkerScript(b.path(if (risky) "linker_risky.ld" else "linker_safe.ld"));
-        // toggle compiler options
+        // toggle compiler options (exe)
         exe.bundle_compiler_rt = false;
         exe.no_builtin = true;
         exe.link_data_sections = true;
         exe.link_function_sections = true;
+        // Module options
         exe_mod.strip = true;
         exe_mod.single_threaded = true;
         // further strip & stuff
