@@ -18,14 +18,19 @@ pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{
         .preferred_optimize_mode = .ReleaseSmall,
     });
+
     // build
-    const exe = b.addExecutable(.{
-        .name = "sudoku",
+    const exe_mod = b.addModule("sudoku", .{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
+    const exe = b.addExecutable(.{
+        .name = "sudoku",
+        .root_module = exe_mod,
+    });
     b.installArtifact(exe);
+
     // optimize
     if (optimize == .ReleaseFast or optimize == .ReleaseSmall) {
         // custom linker script
@@ -36,17 +41,19 @@ pub fn build(b: *std.Build) !void {
         exe.no_builtin = true;
         exe.link_data_sections = true;
         exe.link_function_sections = true;
-        exe.root_module.strip = true;
-        exe.root_module.single_threaded = true;
+        exe_mod.strip = true;
+        exe_mod.single_threaded = true;
         // further strip & stuff
         try furtherOptimize(b, exe); // "shrink" step
     }
+
     // run
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| run_cmd.addArgs(args);
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
+
     // tests
     const exe_unit_tests = b.addTest(.{
         .root_source_file = b.path("src/main.zig"),

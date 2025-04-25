@@ -50,7 +50,7 @@ fn solve(state: *[81]u8) bool {
                 // search for the last cell which we can change
                 if (grid[current] != 0) {
                     if (current == 0) {
-                        return false; // no solution
+                        return false;
                     } else {
                         current -= 1;
                         continue :backtrack;
@@ -64,7 +64,7 @@ fn solve(state: *[81]u8) bool {
                 // stop backtracking when we are in a stable state
                 if (state[current] == 0) {
                     if (current == 0) {
-                        return false; // no solution
+                        return false;
                     } else {
                         current -= 1;
                     }
