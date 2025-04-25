@@ -16,14 +16,18 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     // const argc = argc_argv_ptr[0];
     const argv_ptr: [*][*:0]u8 = @ptrCast(argc_argv_ptr + 1);
     const input = argv_ptr[1];
+    var grid: [81]u8 = undefined;
 
-    var cell = input;
-    while (cell[0] != 0) {
-        cell[0] -= '0';
-        cell += 1;
+    var in_ptr = input;
+    var grid_ptr: [*]u8 = &grid;
+    while (in_ptr[0] != 0) {
+        in_ptr[0] -= '0';
+        grid_ptr[0] = in_ptr[0];
+        in_ptr += 1;
+        grid_ptr += 1;
     }
 
-    if (solve(input[0..81])) {
+    if (solve(grid, input[0..81])) {
         render(input[0..81]);
     }
 
@@ -31,8 +35,7 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
 }
 
 // Backtracking sudoku solver
-fn solve(state: *[81]u8) bool {
-    const grid: [81]u8 = state.*;
+fn solve(grid: [81]u8, state: *[81]u8) bool {
     var current: u32 = 0;
 
     while (true) {
