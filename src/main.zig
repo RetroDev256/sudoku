@@ -14,16 +14,17 @@ pub export fn _start() callconv(.naked) noreturn {
 
 fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     // const argc = argc_argv_ptr[0];
-    const argv: [*][*:0]u8 = @ptrCast(argc_argv_ptr + 1);
+    const argv_ptr: [*][*:0]u8 = @ptrCast(argc_argv_ptr + 1);
+    const input = argv_ptr[1];
 
-    var cell = argv[1];
+    var cell = input;
     while (cell[0] != 0) {
         cell[0] -= '0';
         cell += 1;
     }
 
-    if (solve(argv[1][0..81])) {
-        render(argv[1][0..81]);
+    if (solve(input[0..81])) {
+        render(input[0..81]);
     }
 
     std.process.exit(0);
