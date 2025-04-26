@@ -82,16 +82,16 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
 
 fn render(grid: *const [81]u8) void {
     var idx: u32 = 0;
-    var col: u32 = 0;
+    var col: u32 = 9;
     while (idx < 81) {
         putByte('0' + grid[idx]);
 
         idx += 1;
-        col += 1;
+        col -= 1;
 
-        if (col == 9) {
+        if (col == 0) {
             putByte('\n');
-            col = 0;
+            col = 9;
         }
     }
 }
