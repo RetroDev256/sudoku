@@ -39,7 +39,7 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
     var current: u32 = 0;
 
     while (true) {
-        if (check(state)) {
+        while (check(state)) {
             // Update the cell - skip ones we can't alter
             while (state[current] != 0) {
                 if (current == 80) {
@@ -49,45 +49,50 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
                 }
             }
             state[current] = 9;
-        } else {
-            backtrack: while (true) {
-                // search for the last cell which we can change
-                if (grid[current] != 0) {
-                    if (current == 0) {
-                        return false;
-                    } else {
-                        current -= 1;
-                        continue :backtrack;
-                    }
-                }
+        }
 
-                // reduce the cell
-                assert(state[current] != 0);
-                state[current] -= 1;
-
-                // stop backtracking when we are in a stable state
-                if (state[current] == 0) {
-                    if (current == 0) {
-                        return false;
-                    } else {
-                        current -= 1;
-                    }
+        backtrack: while (true) {
+            // search for the last cell which we can change
+            if (grid[current] != 0) {
+                if (current == 0) {
+                    return false;
                 } else {
-                    break :backtrack;
+                    current -= 1;
+                    continue :backtrack;
                 }
+            }
+
+            // reduce the cell
+            assert(state[current] != 0);
+            state[current] -= 1;
+
+            // stop backtracking when we are in a stable state
+            if (state[current] == 0) {
+                if (current == 0) {
+                    return false;
+                } else {
+                    current -= 1;
+                }
+            } else {
+                break :backtrack;
             }
         }
     }
 }
 
 fn render(grid: *const [81]u8) void {
-    for (0..9) |row| {
-        for (0..9) |col| {
-            const cell = grid[col + row * 9];
-            assert(cell > 0 and cell < 10);
-            putByte('0' + cell);
+    var idx: u32 = 0;
+    var col: u32 = 0;
+    while (idx < 81) {
+        putByte('0' + grid[idx]);
+
+        idx += 1;
+        col += 1;
+
+        if (col == 9) {
+            putByte('\n');
+            col = 0;
         }
-        putByte('\n');
     }
 }
 
