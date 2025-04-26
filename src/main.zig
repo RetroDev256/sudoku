@@ -21,6 +21,8 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     var in_ptr = input;
     var grid_ptr: [*]u8 = &grid;
     while (in_ptr[0] != 0) {
+        assert(in_ptr[0] <= '9');
+        assert(in_ptr[0] >= '0');
         in_ptr[0] -= '0';
         grid_ptr[0] = in_ptr[0];
         in_ptr += 1;
@@ -28,6 +30,9 @@ fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
     }
 
     if (solve(grid, input[0..81])) {
+        for (input[0..81]) |cell| {
+            assert(cell >= 1 and cell <= 9);
+        }
         render(input[0..81]);
     }
 
@@ -39,34 +44,39 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
     var current: u32 = 0;
 
     while (true) {
+        for (state[0..current]) |cell| {
+            assert(cell >= 1 and cell <= 9);
+        }
+
         while (check(state)) {
-            // Update the cell - skip ones we can't alter
+            // search for a cell we can change
             while (state[current] != 0) {
                 if (current == 80) {
-                    return true; // found solution
+                    return true;
                 } else {
                     current += 1;
                 }
             }
+
             state[current] = 9;
         }
 
         backtrack: while (true) {
-            // search for the last cell which we can change
-            if (grid[current] != 0) {
+            // skip back to a cell we can change
+            while (grid[current] != 0) {
                 if (current == 0) {
                     return false;
                 } else {
                     current -= 1;
-                    continue :backtrack;
                 }
             }
 
-            // reduce the cell
+            // change the cell
+            assert(grid[current] == 0);
             assert(state[current] != 0);
             state[current] -= 1;
 
-            // stop backtracking when we are in a stable state
+            // make sure we are in a stable state
             if (state[current] == 0) {
                 if (current == 0) {
                     return false;
