@@ -13,7 +13,9 @@ pub export fn _start() callconv(.naked) noreturn {
 }
 
 fn posixMainAndExit(argc_argv_ptr: [*]usize) callconv(.c) noreturn {
-    // const argc = argc_argv_ptr[0];
+    const argc = argc_argv_ptr[0];
+    assert(argc == 2);
+
     const argv_ptr: [*][*:0]u8 = @ptrCast(argc_argv_ptr + 1);
     const input = argv_ptr[1];
     var grid: [81]u8 = undefined;
