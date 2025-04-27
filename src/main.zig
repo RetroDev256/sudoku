@@ -50,13 +50,12 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
             assert(cell >= 1 and cell <= 9);
         }
 
-        while (check(state)) {
+        while (check(state, current)) {
             // search for a cell we can change
             while (state[current] != 0) {
-                if (current == 80) {
+                current += 1;
+                if (current == 81) {
                     return true;
-                } else {
-                    current += 1;
                 }
             }
 
@@ -66,10 +65,9 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
         backtrack: while (true) {
             // skip back to a cell we can change
             while (grid[current] != 0) {
-                if (current == 0) {
+                current -%= 1;
+                if (~current == 0) {
                     return false;
-                } else {
-                    current -= 1;
                 }
             }
 
@@ -80,10 +78,9 @@ fn solve(grid: [81]u8, state: *[81]u8) bool {
 
             // make sure we are in a stable state
             if (state[current] == 0) {
-                if (current == 0) {
+                current -%= 1;
+                if (~current == 0) {
                     return false;
-                } else {
-                    current -= 1;
                 }
             } else {
                 break :backtrack;
@@ -114,57 +111,54 @@ fn putByte(byte: u8) void {
     assert(std.os.linux.write(1, str, 1) == 1);
 }
 
-// return true on success - ignore cells == 0
-fn check(grid: *const [81]u8) bool {
-    return blocks(grid) and lines(grid);
+// return true on success - skip cells == 0
+fn check(grid: *const [81]u8, idx: u32) bool {
+    if (grid[idx] == 0) return true;
+    return rows(grid, idx) and cols(grid, idx) and blocks(grid, idx);
 }
 
-// return true on success - ignore cells == 0
-fn lines(grid: *const [81]u8) bool {
-    for (0..9) |col_a| {
-        for (0..col_a) |col_b| {
-            for (0..9) |row_a| {
-                for (0..row_a) |row_b| {
-                    const idx = col_a + row_a * 9;
-                    if (grid[idx] == 0) continue;
+fn rows(grid: *const [81]u8, idx: u32) bool {
+    const row = idx / 9;
+    const col = idx % 9;
 
-                    const row_idx = col_b + row_a * 9;
-                    if (grid[idx] == grid[row_idx]) {
-                        return false;
-                    }
-
-                    const col_idx = col_a + row_b * 9;
-                    if (grid[idx] == grid[col_idx]) {
-                        return false;
-                    }
-                }
-            }
+    for (0..9) |cmp| {
+        if (cmp == col) continue;
+        const cmp_idx = cmp + row * 9;
+        if (grid[idx] == grid[cmp_idx]) {
+            return false;
         }
     }
 
     return true;
 }
 
-// return true on success - ignore cells == 0
-fn blocks(grid: *const [81]u8) bool {
-    for (0..3) |b_row| {
-        for (0..3) |b_col| {
-            var mask: u32 = 0;
-            for (0..3) |sub_row| {
-                for (0..3) |sub_col| {
-                    const row = sub_row + b_row * 3;
-                    const col = sub_col + b_col * 3;
-                    const idx = col + row * 9;
-                    if (grid[idx] == 0) continue;
+fn cols(grid: *const [81]u8, idx: u32) bool {
+    const row = idx / 9;
+    const col = idx % 9;
 
-                    const shift: u5 = @intCast(grid[idx]);
+    for (0..9) |cmp| {
+        if (cmp == row) continue;
+        const cmp_idx = col + cmp * 9;
+        if (grid[idx] == grid[cmp_idx]) {
+            return false;
+        }
+    }
 
-                    if ((mask >> shift) & 1 == 1) {
-                        return false;
-                    } else {
-                        mask |= @as(u32, 1) << shift;
-                    }
-                }
+    return true;
+}
+
+fn blocks(grid: *const [81]u8, idx: u32) bool {
+    const block_row = (idx / 9) / 3;
+    const block_col = (idx % 9) / 3;
+
+    for (0..3) |cmp_row_off| {
+        for (0..3) |cmp_col_off| {
+            const cmp_row = cmp_row_off + block_row * 3;
+            const cmp_col = cmp_col_off + block_col * 3;
+            const cmp_idx = cmp_col + cmp_row * 9;
+            if (cmp_idx == idx) continue;
+            if (grid[idx] == grid[cmp_idx]) {
+                return false;
             }
         }
     }
