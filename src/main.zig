@@ -143,18 +143,17 @@ fn lines(grid: *const [81]u8, idx: u32) bool {
 fn blocks(grid: *const [81]u8, idx: u32) bool {
     const block_row = (idx / 9) / 3;
     const block_col = (idx % 9) / 3;
+    var count: u32 = 0;
 
     for (0..3) |cmp_row_off| {
         for (0..3) |cmp_col_off| {
             const cmp_row = cmp_row_off + block_row * 3;
             const cmp_col = cmp_col_off + block_col * 3;
             const cmp_idx = cmp_col + cmp_row * 9;
-            if (cmp_idx == idx) continue;
-            if (grid[idx] == grid[cmp_idx]) {
-                return false;
-            }
+            const match = grid[idx] == grid[cmp_idx];
+            count += @intFromBool(match);
         }
     }
 
-    return true;
+    return count == 1;
 }
