@@ -114,33 +114,26 @@ fn putByte(byte: u8) void {
 // return true on success - skip cells == 0
 fn check(grid: *const [81]u8, idx: u32) bool {
     if (grid[idx] == 0) return true;
-    return rows(grid, idx) and cols(grid, idx) and blocks(grid, idx);
+    return lines(grid, idx) and blocks(grid, idx);
 }
 
-fn rows(grid: *const [81]u8, idx: u32) bool {
+fn lines(grid: *const [81]u8, idx: u32) bool {
     const row = idx / 9;
     const col = idx % 9;
 
     for (0..9) |cmp| {
-        if (cmp == col) continue;
-        const cmp_idx = cmp + row * 9;
-        if (grid[idx] == grid[cmp_idx]) {
-            return false;
+        if (cmp != col) {
+            const cmp_idx = cmp + row * 9;
+            if (grid[idx] == grid[cmp_idx]) {
+                return false;
+            }
         }
-    }
 
-    return true;
-}
-
-fn cols(grid: *const [81]u8, idx: u32) bool {
-    const row = idx / 9;
-    const col = idx % 9;
-
-    for (0..9) |cmp| {
-        if (cmp == row) continue;
-        const cmp_idx = col + cmp * 9;
-        if (grid[idx] == grid[cmp_idx]) {
-            return false;
+        if (cmp != row) {
+            const cmp_idx = col + cmp * 9;
+            if (grid[idx] == grid[cmp_idx]) {
+                return false;
+            }
         }
     }
 
